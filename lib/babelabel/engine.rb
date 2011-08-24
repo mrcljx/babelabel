@@ -4,7 +4,7 @@ require "rails"
 module Babelabel
   class Engine < Rails::Engine
     initializer "babelabel.static_assets" do |app|
-      app.middleware.insert_after ::ActionDispatch::Static, ::ActionDispatch::Static, "#{root}/public"
+      app.middleware.insert_before ::Rack::Lock, ::ActionDispatch::Static, "#{root}/public"
     end
 
     initializer "babelabel.replace_i18n_backend", :after => :build_middleware_stack do |app|
