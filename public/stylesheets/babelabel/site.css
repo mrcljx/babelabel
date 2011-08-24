@@ -1,0 +1,20 @@
+@-webkit-keyframes notTranslatedAnimation {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+    background-color: #cfc;
+    margin-left: -3px;
+    margin-right: -3px;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
+.hasAjaxRequest {
+  position: relative;
+  background-color: #fff;
+  -webkit-animation: notTranslatedAnimation 0.8s infinite;
+}
