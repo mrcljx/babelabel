@@ -1,4 +1,4 @@
-class Babelabel::TranslationsController < ApplicationController
+class Babelabel::TranslationsController < Babelabel::ApplicationController
   unloadable
 
   helper_method :mongo_i18n
