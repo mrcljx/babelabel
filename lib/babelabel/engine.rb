@@ -7,8 +7,13 @@ module Babelabel
       app.middleware.insert_after ::ActionDispatch::Static, ::ActionDispatch::Static, "#{root}/public"
     end
 
-    initializer "babelabel.replace_i18n_backend" do |app|
-      collection = Mongo::Connection.new['babelabel-test'].collection('i18n')
+    initializer "babelabel.replace_i18n_backend", :after => :build_middleware_stack do |app|
+      if defined?(MongoMapper)
+        collection = MongoMapper.database.collection('i18n')
+      else
+        puts "Couldn't find a connection."
+        # collection = Mongo::Connection.new['babelabel-test'].collection('i18n')
+      end
 
       mongo_backend = Babelabel::MongoBackend.new(collection)
       mongo_writeback = Babelabel::MongoWriteback.new(collection)
