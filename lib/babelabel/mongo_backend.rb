@@ -27,23 +27,6 @@ class Babelabel::MongoBackend
     collection.save(doc)
   end
 
-  def store_translations(locale, data, options = {})
-    escape = options.fetch(:escape, true)
-    flatten_translations(locale, data, escape, @subtrees).each do |key, value|
-      case value
-      when Hash
-        if @subtrees && (old_value = get(locale, key))
-          old_value = old_value
-          value = old_value.deep_symbolize_keys.deep_merge!(value) if old_value.is_a?(Hash)
-        end
-      when Proc
-        raise "Key-value stores cannot handle procs"
-      end
-
-      set(locale, key, value) unless value.is_a?(Symbol)
-    end
-  end
-
   def keys
     collection.find({}, :fields => ["_id"]).collect do |row|
       row["_id"]
@@ -51,11 +34,7 @@ class Babelabel::MongoBackend
   end
 
   def available_locales
-    locales = self.keys.map { |k| k =~ /\./; $` }
-    locales.uniq!
-    locales.compact!
-    locales.map! { |k| k.to_sym }
-    locales
+    [:en, :de]
   end
 
   protected
@@ -63,6 +42,7 @@ class Babelabel::MongoBackend
   def lookup(locale, key, scope = [], options = {})
     key   = normalize_flat_keys(locale, key, scope, options[:separator])
     value = get(locale, key)
-    value.is_a?(Hash) ? value.deep_symbolize_keys : value
+    raise I18n::MissingTranslationData.new(locale, key, options) if value.nil?
+    value
   end
 end

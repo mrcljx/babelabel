@@ -40,11 +40,11 @@ class Babelabel::TranslationsController < Babelabel::ApplicationController
 
     if vals = params["values"]
       if vals.include?("de")
-        current["values"]["de"] = vals["de"]
+        current["values"]["de"] = (vals["de"].blank? ? nil : vals["de"])
       end
 
       if vals.include?("en")
-        current["values"]["en"] = vals["en"]
+        current["values"]["en"] = (vals["en"].blank? ? nil : vals["en"])
       end
     end
 
