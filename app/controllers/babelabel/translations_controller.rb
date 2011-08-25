@@ -37,12 +37,18 @@ class Babelabel::TranslationsController < Babelabel::ApplicationController
     current = mongo_i18n.collection.find_one(:_id => key) or raise "not found"
     current["values"] ||= {}
 
-    if de_value = params["value"]["de"]
-      current["values"]["de"] = de_value
+    if vals = params["values"]
+      if vals.include?("de")
+        current["values"]["de"] = vals["de"]
+      end
+
+      if vals.include?("en")
+        current["values"]["en"] = vals["en"]
+      end
     end
 
-    if en_value = params["value"]["en"]
-      current["values"]["en"] = en_value
+    if params.include?("hidden")
+      current["hidden"] = [1, true, "1", "true", "yes"].include?(params["hidden"])
     end
 
     mongo_i18n.collection.save(current)

@@ -1,3 +1,6 @@
+:javascript
+  var TRANSLATIONS = #{@translations.to_json};
+
 #confirmDeleteUnseen(style="display: none;")
   .modal-backdrop
     .modal
@@ -15,8 +18,129 @@
         %button.btn.danger(data-action="confirm") Ja, alle löschen!
         %button.btn(data-action="cancel") Nein, doch nicht.
 
+%script#markdown-help(type="text/html")
+  :md
+    Mit Markdown können Texte einfach formatiert werden. Mehr zu [Markdown lesen](http://de.wikipedia.org/wiki/Markdown).
+
+    ---
+
+    `**fett**`, `*kursiv*`, `# Überschrift 1`, `## Überschrift 2`, `- Listenpunkt` (Bindestrich voranstellen). Eine Leerzeile erzeugt einen Absatz.
+
+    Links werden werden mit `[Text des Links](http://...)` definiert. Bilder lassen sich mit `![Bildname](http://...)` einbinden.
+
+%script#html-help(type="text/html")
+  :md
+    Mit HTML stehen sämtliche HTML-Tags zur Verfügung, unter anderem `<a>`, `<b>`, `<p>`, `<ul>`, `<li>` oder `<br/>`.
+
+    Es sollte darauf geachtet werden, dass alle Tags geschlossen werden, also `<i>kursiv</i>`.
+
+    Eine [Liste der Tags](https://developer.mozilla.org/en/HTML/Element) (Englisch) findet man beim *Mozilla Developer Network*.
+
+
+%script#popover(type="text/html")
+  .popover.below
+    .arrow
+    .inner
+      %h3.title
+        ${title}
+        %a.close(href="#" data-action="cancel") x
+      .content {{html content}}
+
+%script#popoutTranslation(type="text/html")
+  .modal-backdrop.popout-translation
+    .modal
+      .modal-header
+        %h3
+          Übersetze
+        %a.close(href="#" data-bind="click: cancel") x
+      .modal-body
+        %form(data-bind="submit: $.noop")
+          .info
+            .clearfix
+              %label Schlüssel
+              .input
+                %span(data-bind="text: key")
+            .clearfix
+              %label Standardwert
+              .input
+                %span(data-bind="text: defaultText")
+            .clearfix
+              %label Zuletzt angezeigt
+              .input
+                %span(data-bind="text: lastSeenString")
+
+          %hr
+
+          %ul.tabs
+            %li(data-bind="attr: {'class': ( activeTab() == 'en' ? 'active' : '' )}")
+              %a(href="#" data-bind="click: switchToTab('en')") Englisch
+            %li(data-bind="attr: {'class': ( activeTab() == 'de' ? 'active' : '' )}")
+              %a(href="#" data-bind="click: switchToTab('de')") Deutsch
+          .tab-panels
+            .tab-panel(data-bind="visible: activeTab() == 'de'")
+              %textarea(data-bind="value: values.de")
+            .tab-panel(data-bind="visible: activeTab() == 'en'")
+              %textarea(data-bind="value: values.en")
+
+          %hr
+            %label
+              Optionen
+            .input
+              %ul.inputs-list
+                %li
+                  %label
+                    %input(type="checkbox" data-bind="checked: hidden")
+                    %span Diese Übersetzung nicht mehr anzeigen.
+
+      .modal-footer
+        %button.btn.primary(data-bind="click: save") Speichern
+        %button.btn(data-bind="click: cancel") Verwerfen
+
+%script#translationRow(type="text/html")
+  %tr.translation(data-bind="attr: { 'data-id': key, 'class': ( !!last_seen() ? '' : 'deprecated' ) }")
+    %td.spinner
+      %a(href="#" data-bind="click: popout")
+        %img(src="/images/babelabel/translation-popout.png" width="16" height="16")
+      %a(href="#" data-bind="click: unhide, visible: hidden")
+        %img(src="/images/babelabel/translation-unhide.png" width="16" height="16")
+      %a(href="#" data-bind="click: hide, visible: !hidden()")
+        %img(src="/images/babelabel/translation-hide.png" width="16" height="16")
+      %img(src="/images/babelabel/validation-ok.png" width="16" height="16" data-bind="visible: taskStatus() == 'ok'")
+      %img(src="/images/babelabel/validation-alert.png" width="16" height="16" data-bind="visible: taskStatus() == 'alert'")
+      %img(src="/images/babelabel/spinner.gif" width="16" height="16" data-bind="visible: taskStatus() == 'active'")
+    %td.locale
+      %textarea(name="values[en]" data-bind="value: values.en, attr: { placeholder: $data.default() }")
+    %td.locale
+      %textarea(name="values[de]" data-bind="value: values.de, attr: { placeholder: $data.default() }")
+    %td.info
+      .default(data-bind="text: $data.default()")
+      .key(data-bind="text: key")
+      .lastSeen(data-bind="text: lastSeenString")
+      .special
+        %span.bubble.markdown(data-bind="visible: _(features).include('markdown')") markdown
+        %span.bubble.html(data-bind="visible: _(features).include('html')") html
+
 %style(type="text/css")
   :sass
+    form
+      textarea
+        color: #000
+
+    .popover h3.title a.close
+      // same as .modal .modal-header .close
+      position: absolute
+      font-weight: normal
+      right: 14px
+      top: 14px
+      color: #999
+      line-height: 10px
+      font-size: 18px
+
+    .popout-translation
+      textarea
+        min-height: 200px
+        width: 100%
+
     .translation-table
       table-layout: fixed
 
@@ -25,9 +149,15 @@
           width: 38%
         &.info
           width: 24%
+        &.spinner
+          width: 0
+
+          img
+            display: block
+            margin-left: -20px
 
       tr.deprecated
-        opacity: 0.25
+        opacity: 0.5
 
       td
         vertical-align: top
@@ -41,6 +171,15 @@
             border-color: #f00
             background-color: #ddd
 
+        &.spinner
+          a
+            opacity: 0.2
+            display: block
+            margin: 0.5em 0
+
+            &:hover
+              opacity: 1
+
         &.info
           line-height: 1.4em
 
@@ -51,129 +190,269 @@
 
             &.notGiven
               color: #faa
-.topbar
-  .fill
-    .container
-      %h3
-        %a(href="/translations") Babelabel
-      %ul
-        %li
-          %a(href="#")
-            Alle
-            == (#{@translations.count})
-        %li
-          %a(href="#")
-            Unvollständige
-            == (#{@translations.select{|x| x["values"]["de"].blank? or x["values"]["en"].blank?}.count})
-        %li
-          %a(href="#")
-            Nicht gesehen
-            == (#{@translations.select{|x| !x["last_seen"]}.count})
-      %ul.nav.secondary-nav
-        %li.menu
-          %a.menu(href="#") Aktionen
-          %ul.menu-dropdown
-            %li
-              %a#resetLastSeen(href="#") Reset LastSeen
-            %li
-              %a#deleteUnseen(href="#") Delete Unseen
 
-.container
-  %br
-  %br
-  %br
-  %br
+          .bubble
+            cursor: help
+            font-size: 80%
+            font-weight: bold
+            color: white
+            padding: 2px
+            border-radius: 3px
 
-  %section#translations
-    .page-header
-      %h2 Alle Übersetzungen
+            &.markdown
+              background-color: #68f
+              border: 1px solid darken(#68f, 15%)
 
-    .row
-      .span16.columns
-        %table.translation-table.common-table.zebra-striped
-          %thead
-            %tr
-              %th.locale English
-              %th.locale German
-              %th.info
-          - if @translations.empty?
-            %tbody.noTranslations
-              %td(colspan="3")
-                Es liegen keine Übersetzungen in der Datenbank.
-          %tbody
-            - @translations.each do |t|
-              - cls = !t["last_seen"] ? "deprecated" : ""
-              %tr.translation{ :"data-id" => t["_id"], :class => cls }
-                %td.locale
-                  = text_area_tag "value[en]", t["values"]["en"], :placeholder => t["default"]
-                %td.locale
-                  = text_area_tag "value[de]", t["values"]["de"], :placeholder => t["default"]
-                %td.info
-                  - default = t["default"]
-                  .default{ :class => (default.blank? ? "notGiven" : "")}
-                    = default.blank? ? "no default" : default
-                  .path= t["_id"]
-                  - last_seen = t["last_seen"]
-                  - if last_seen
-                    .lastSeen
-                      vor
-                      = time_ago_in_words(Time.parse(last_seen))
-        .actions
-          Updates werden automatisch gespeichert.
+            &.html
+              background-color: #f33
+              border: 1px solid darken(#f33, 15%)
+
+#translation-app
+  .topbar
+    .fill
+      .container
+        %h3
+          %a(href="/translations") Babelabel
+        %ul
+          %li(data-bind="attr: {'class': ( activeTab() == 'all' ? 'active' : '' )}")
+            %a(href="#" data-bind="click: switchTab" data-tab="all")
+              Alle (<span data-bind="text: allTranslations().length"></span>)
+          %li(data-bind="attr: {'class': ( activeTab() == 'incomplete' ? 'active' : '' )}")
+            %a(href="#" data-bind="click: switchTab" data-tab="incomplete")
+              Unvollständige (<span data-bind="text: incompleteTranslations().length"></span>)
+          %li(data-bind="attr: {'class': ( activeTab() == 'unseen' ? 'active' : '' )}")
+            %a(href="#" data-bind="click: switchTab" data-tab="unseen")
+              Nicht gesehen (<span data-bind="text: unseenTranslations().length"></span>)
+          %li(data-bind="attr: {'class': ( activeTab() == 'hidden' ? 'active' : '' )}")
+            %a(href="#" data-bind="click: switchTab" data-tab="hidden")
+              Versteckt (<span data-bind="text: hiddenTranslations().length"></span>)
+        %form(data-bind="submit: $.noop")
+          %input(type="text" placeholder="Suchen" data-bind="value: searchQuery, valueUpdate: 'keyup'")
+        %ul.nav.secondary-nav
+          %li.menu
+            %a.menu(href="#") Aktionen
+            %ul.menu-dropdown
+              %li
+                %a#resetLastSeen(href="#") Reset LastSeen
+              %li
+                %a#deleteUnseen(href="#") Delete Unseen
+
+  .container
+    %br
+    %br
+    %br
+    %br
+
+    %section#translations
+      .page-header
+        %h2 Alle Übersetzungen
+
+      .row
+        .span16.columns
+          %form(data-bind="submit: $.noop")
+            %table.translation-table.common-table.zebra-striped
+              %thead
+                %tr
+                  %th.spinner
+                  %th.locale English / English
+                  %th.locale Deutsch / German
+                  %th.info
+              %tbody.noTranslations(data-bind="visible: filteredTranslations().length == 0")
+                %tr
+                  %td(colspan="3")
+                    Es liegen keine Übersetzungen in der Datenbank.
+              %tbody(data-bind="template: { name: 'translationRow', foreach: filteredTranslations }")
+            .actions
+              Updates werden automatisch gespeichert.
 
 :coffeescript
   $ ->
+    updateTranslation = (t) ->
+      $.ajax
+        type: "POST"
+        url: "/translations/\#{t.key}"
+        data:
+          _method: "PUT"
+          "values[de]": t.values.de() || ""
+          "values[en]": t.values.en() || ""
+          "hidden": t.hidden() || false
+        beforeSend: ->
+          t.taskStatus("active")
+          t.tasks(t.tasks() + 1)
+          true
+        error: ->
+          t.taskStatus("alert") if t.tasks() <= 1
+        success: ->
+          t.taskStatus("ok") if t.tasks() <= 1
+        complete: ->
+          t.tasks(t.tasks() - 1)
+
+    translations = _(TRANSLATIONS).map (item) ->
+      m =
+        key: item._id
+        default: ko.observable(item.default || "")
+        last_seen: ko.observable(item.last_seen || null)
+        hidden: ko.observable(item.hidden or false)
+        unhide: -> m.hidden(false)
+        hide: -> m.hidden(true)
+        tasks: ko.observable(0)
+        taskStatus: ko.observable(false)
+        features: _(["html", "markdown"]).select (i) ->
+          _(item._id).endsWith("_\#{i}")
+        values:
+          de: ko.observable(item.values.de || "")
+          en: ko.observable(item.values.en || "")
+
+      m.lastSeenString = ko.dependentObservable ->
+        xmlDate = m.last_seen()
+        if xmlDate
+          $.timeago(new Date(Date.parse(xmlDate)))
+        else
+          "nie"
+
+      m.hidden.subscribe    -> updateTranslation(m)
+      m.values.de.subscribe -> updateTranslation(m)
+      m.values.en.subscribe -> updateTranslation(m)
+
+      m.popout = ->
+        tmpl = $("#popoutTranslation").tmpl().prependTo("body")
+        poViewModel =
+          key: item._id
+          defaultText: m.default()
+          hidden: ko.observable(m.hidden())
+          lastSeenString: m.lastSeenString
+          values:
+            de: ko.observable(m.values.de())
+            en: ko.observable(m.values.en())
+          activeTab: ko.observable('en')
+          cancel: -> tmpl.remove()
+          switchToTab: (tab) ->
+            (-> poViewModel.activeTab(tab))
+          save: ->
+            m.hidden(@hidden())
+            m.values.de(@values.de())
+            m.values.en(@values.en())
+            tmpl.remove()
+        ko.applyBindings(poViewModel, tmpl[0])
+
+      m
+
+    viewModel =
+      searchQuery: ko.observable("")
+      hiddenAndUnhiddenTranslations: ko.observableArray(translations)
+      activeTab: ko.observable("all")
+      switchTab: (e) ->
+        $this = $(e.currentTarget)
+        viewModel.activeTab($this.attr('data-tab'))
+
+    viewModel.allTranslations = ko.dependentObservable ->
+      _(viewModel.hiddenAndUnhiddenTranslations()).select (item) ->
+        !item.hidden()
+    viewModel.hiddenTranslations = ko.dependentObservable ->
+      _(viewModel.hiddenAndUnhiddenTranslations()).select (item) ->
+        item.hidden()
+    viewModel.incompleteTranslations = ko.dependentObservable ->
+      _(viewModel.allTranslations()).select (item) ->
+        _.isBlank(item.values.de() || "") or _.isBlank(item.values.en() || "")
+    viewModel.unseenTranslations = ko.dependentObservable ->
+      _(viewModel.allTranslations()).select (item) ->
+        !item.last_seen()
+
+    viewModel.filteredTranslations = ko.dependentObservable ->
+      source = switch viewModel.activeTab()
+        when "all" then viewModel.allTranslations()
+        when "unseen" then viewModel.unseenTranslations()
+        when "incomplete" then viewModel.incompleteTranslations()
+        when "hidden" then viewModel.hiddenTranslations()
+        else []
+
+      _(source).select (item) ->
+        q = (viewModel.searchQuery() || "").toLowerCase()
+
+        if _.isBlank(q)
+          true
+        else
+          _([item.key, item.values.de(), item.values.en()]).detect (s) ->
+            _((s || "").toLowerCase()).includes(q)
+
+
+    ko.applyBindings(viewModel)
+
+  showPopover = ($this, options) ->
+    popover = $("#popover").tmpl(options).prependTo("body").hide()
+    popover.find(".close").click (e) ->
+      e.preventDefault()
+
+    _.defer ->
+      o = $this.offset()
+      o.top += $(document).scrollTop()
+      o.left += $(document).scrollLeft()
+
+      p =
+        width: popover.outerWidth()
+        height: popover.outerHeight()
+      d =
+        width: $this.outerWidth()
+        height: $this.outerHeight()
+
+      if popover.is(".left")
+        o.left -= p.width
+        o.top -= p.height / 2 - d.height / 2
+      else if popover.is(".right")
+        o.left += d.width
+        o.top -= p.height / 2 - d.height / 2
+      else if popover.is(".below")
+        o.left += d.width / 2 - p.width / 2
+        o.top += d.height
+      else if popover.is(".above")
+        o.left += d.width / 2 - p.width / 2
+        o.top -= p.height
+
+      popover.offset(o).fadeIn(150)
+
+  $ ->
+    $(".bubble").bind "click", (e) ->
+      $this = $(this)
+
+      if $this.is(".markdown")
+        showPopover $this,
+          title: "Markdown"
+          content: $("#markdown-help").html()
+      else
+        showPopover $this,
+          title: "HTML"
+          content: $("#html-help").html()
+
     $("body").bind "click", (e) ->
       $("a.menu").parent("li").removeClass "open"
+      $(".popover:visible").fadeOut
+        complete: ->
+          $(this).remove()
 
     $("a.menu").click (e) ->
       $li = $(this).parent("li").toggleClass("open")
       false
 
+    customConfirm = (callback) ->
+      $modal = $("#confirmDeleteUnseen").clone().attr('id', null)
+      $modal.find("[data-action=confirm]").click (e) ->
+        e.preventDefault()
+        $modal.remove()
+        callback()
+      $modal.find("[data-action=cancel]").click (e) ->
+        e.preventDefault()
+        $modal.remove()
+      $modal.prependTo("body").show()
 
-:coffeescript
-  customConfirm = (callback) ->
-    $modal = $("#confirmDeleteUnseen").clone().attr('id', null)
-    $modal.find("[data-action=confirm]").click (e) ->
+    $("#resetLastSeen").click (e) ->
       e.preventDefault()
-      $modal.remove()
-      callback()
-    $modal.find("[data-action=cancel]").click (e) ->
-      e.preventDefault()
-      $modal.remove()
-    $modal.prependTo("body").show()
-
-  $("#resetLastSeen").click (e) ->
-    e.preventDefault()
-    $.ajax
-      url: "/translations/reset_last_seen"
-      type: "POST"
-
-  $("#deleteUnseen").click (e) ->
-    e.preventDefault()
-    customConfirm ->
       $.ajax
-        url: "/translations/delete_unseen"
+        url: "/translations/reset_last_seen"
         type: "POST"
 
-  $(".translation").find(":input").change ->
-    $this = $(this)
-    $parent = $this.closest(".translation")
-
-    data =
-      _method: "PUT"
-
-    data[$this.attr("name")] = $this.val()
-
-    $.ajax
-      type: "POST"
-      url: "/translations/\#{$parent.attr('data-id')}"
-      data: data
-      beforeSend: ->
-        $this.data("ajax-counter", ($this.data("ajax-counter") or 0) + 1)
-        $this.addClass("hasAjaxRequest")
-        true
-      complete: ->
-        newValue = Math.max(($this.data("ajax-counter") or 0) - 1, 0)
-        $this.data("ajax-counter", newValue)
-        $this.removeClass("hasAjaxRequest") if newValue == 0
+    $("#deleteUnseen").click (e) ->
+      e.preventDefault()
+      customConfirm ->
+        $.ajax
+          url: "/translations/delete_unseen"
+          type: "POST"

@@ -2,9 +2,16 @@
 %html
   %head
     %title Babelabel
-    %link(rel="stylesheet" href="http://twitter.github.com/bootstrap/assets/css/bootstrap-1.1.0.min.css")
+    %link(rel="stylesheet" href="/stylesheets/babelabel/bootstrap.css")
     %link(rel="stylesheet" href="/stylesheets/babelabel/site.css")
-    %link(rel="stylesheet" href="/javascripts/babelabel/iso8601.js")
-    = include_javascripts :babelabel
+
+    %script(src="/javascripts/babelabel/iso8601.js")
+    %script(src="/javascripts/babelabel/jquery.js")
+    %script(src="/javascripts/babelabel/jquery.timeago.js")
+    %script(src="/javascripts/babelabel/jquery-ui.js")
+    %script(src="/javascripts/babelabel/jquery.tmpl.js")
+    %script(src="/javascripts/babelabel/knockout-1.2.1.js")
+    %script(src="/javascripts/babelabel/underscore.js")
+    %script(src="/javascripts/babelabel/underscore.string.js")
   %body
     = yield
