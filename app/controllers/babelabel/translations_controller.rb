@@ -4,7 +4,7 @@ class Babelabel::TranslationsController < Babelabel::ApplicationController
   helper_method :mongo_i18n
 
   def index
-    @translations = mongo_i18n.collection.find({ "_id" => { "$not" => /^(routes)|(resource)|(scopes)|(path_names)|(named_routes)/i }}).sort([["_id", 1]]).to_a
+    @translations = mongo_i18n.collection.find({ "deleted" => nil, "_id" => { "$not" => /^(routes)|(resource)|(scopes)|(path_names)|(named_routes)/i }}).sort([["_id", 1]]).to_a
 
     render :layout => "babelabel/layouts/babelabel"
   end
@@ -14,7 +14,8 @@ class Babelabel::TranslationsController < Babelabel::ApplicationController
       current = mongo_i18n.collection.find_one(:_id => key)
 
       unless current["last_seen"]
-        mongo_i18n.collection.remove({ :_id => key })
+        current["deleted"] = true
+        mongo_i18n.collection.save(current)
       end
     end
 

@@ -17,6 +17,7 @@ class Babelabel::MongoBackend
     collection.find_one(:_id => key.to_s).tap do |doc|
       if doc
         doc["last_seen"] = Time.now.xmlschema
+        doc.delete("deleted")
         collection.save(doc)
       end
     end
