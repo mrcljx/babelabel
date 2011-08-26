@@ -1,3 +1,146 @@
+%style(type="text/css")
+  :sass
+    textarea
+      -webkit-box-sizing: border-box
+      -mox-box-sizing: border-box
+      -o-box-sizing: border-box
+      box-sizing: border-box
+
+    form
+      textarea
+        color: #000
+        // font-family: Consolas, Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif
+
+    .popover h3.title a.close
+      // same as .modal .modal-header .close
+      position: absolute
+      font-weight: normal
+      right: 14px
+      top: 14px
+      color: #999
+      line-height: 10px
+      font-size: 18px
+
+    .popout-translation
+      textarea
+        min-height: 200px
+        width: 100%
+
+    .translation-table
+      table-layout: fixed
+
+      td, th
+        &.locale
+          width: 38%
+        &.info
+          width: 24%
+        &.spinner
+          width: 0
+
+          .item
+            display: block
+            width: 120px
+            margin: 0.5em 0 0.5em -140px
+            line-height: 16px
+            text-align: right
+
+            img
+              vertical-align: top
+              opacity: 0.2
+
+            &.alert
+              color: #f00
+
+            &.ok
+              color: #147500
+
+
+          a.item:hover
+            text-decoration: none
+
+            img
+              opacity: 0.4
+
+
+      tr.deprecated
+        opacity: 0.5
+
+      td
+        vertical-align: top
+
+        .window
+          position: relative
+
+          .window-label
+            position: absolute
+            top: 0
+            right: 0
+            background-color: #eee
+            padding: 2px
+            line-height: 11px
+            border: 1px solid #ccc
+
+            -webkit-border-radius: 0 0 0 3px
+            -moz-border-radius: 0 0 0 3px
+            -o-border-radius: 0 0 0 3px
+            border-radius: 0 0 0 3px
+
+            background: #efefef
+            background: -moz-linear-gradient(top, #efefef 0%, #efefef 24%, #dedede 100%)
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#efefef), color-stop(24%,#efefef), color-stop(100%,#dedede))
+            background: -webkit-linear-gradient(top, #efefef 0%,#efefef 24%,#dedede 100%)
+            background: -o-linear-gradient(top, #efefef 0%,#efefef 24%,#dedede 100%)
+            background: -ms-linear-gradient(top, #efefef 0%,#efefef 24%,#dedede 100%)
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#efefef', endColorstr='#dedede',GradientType=0 )
+            background: linear-gradient(top, #efefef 0%,#efefef 24%,#dedede 100%)
+
+            img
+              vertical-align: top
+
+          &:hover .window-label
+            display: none
+
+        textarea
+          min-height: 85px
+          width: 100%
+
+          &.processing
+            border-color: #f00
+            background-color: #ddd
+
+        &.info
+          line-height: 1.4em
+
+          .default
+            color: #333
+            margin-bottom: 0.2em
+            font-size: 110%
+
+            &.notGiven
+              color: #faa
+
+          .lastSeen, .key
+            font-size: 85%
+
+          .lastSeen
+            color: #bbb
+
+          .key
+            color: #666
+
+          .bubble
+            cursor: help
+            padding: 2px
+            border-radius: 3px
+
+            &.markdown
+              background-color: #def
+              border: 1px solid darken(#def, 5%)
+
+            &.html
+              background-color: #fee
+              border: 1px solid darken(#fee, 5%)
+
 :javascript
   var TRANSLATIONS = #{@translations.to_json};
 
@@ -99,113 +242,41 @@
 %script#translationRow(type="text/html")
   %tr.translation(data-bind="attr: { 'data-id': key, 'class': ( !!last_seen() ? '' : 'deprecated' ) }")
     %td.spinner
-      %a(href="#" data-bind="click: popout")
+      %a.item(href="#" data-bind="click: popout" tabindex="-1")
+        Fenster öffnen
         %img(src="/images/babelabel/translation-popout.png" width="16" height="16")
-      %a(href="#" data-bind="click: unhide, visible: hidden")
+      %a.item(href="#" data-bind="click: unhide, visible: hidden" tabindex="-1")
+        Anzeigen
         %img(src="/images/babelabel/translation-unhide.png" width="16" height="16")
-      %a(href="#" data-bind="click: hide, visible: !hidden()")
+      %a.item(href="#" data-bind="click: hide, visible: !hidden()" tabindex="-1")
+        Verstecken
         %img(src="/images/babelabel/translation-hide.png" width="16" height="16")
-      %img(src="/images/babelabel/validation-ok.png" width="16" height="16" data-bind="visible: taskStatus() == 'ok'")
-      %img(src="/images/babelabel/validation-alert.png" width="16" height="16" data-bind="visible: taskStatus() == 'alert'")
-      %img(src="/images/babelabel/spinner.gif" width="16" height="16" data-bind="visible: taskStatus() == 'active'")
+      .item.ok(data-bind="visible: taskStatus() == 'ok'")
+        Gespeichert
+        %img(src="/images/babelabel/validation-ok.png" width="16" height="16")
+      .item.alert(data-bind="visible: taskStatus() == 'alert'")
+        Fehler
+        %img(src="/images/babelabel/validation-alert.png" width="16" height="16")
+      .item(data-bind="visible: taskStatus() == 'active'")
+        Speichern&hellip;
+        %img(src="/images/babelabel/spinner.gif" width="16" height="16")
     %td.locale
-      %textarea(name="values[en]" data-bind="value: values.en, attr: { placeholder: $data.default() }")
+      .window
+        .window-label
+          %img(src="/images/babelabel/flags/en.png" width="16" height="11")
+        %textarea(name="values[en]" data-bind="value: values.en, attr: { placeholder: $data.default() }")
     %td.locale
-      %textarea(name="values[de]" data-bind="value: values.de, attr: { placeholder: $data.default() }")
+      .window
+        .window-label
+          %img(src="/images/babelabel/flags/de.png" width="16" height="11")
+        %textarea(name="values[de]" data-bind="value: values.de, attr: { placeholder: $data.default() }")
     %td.info
       .default(data-bind="text: $data.default()")
-      .key(data-bind="text: key")
-      .lastSeen(data-bind="text: lastSeenString")
-      .special
+      .key
+        %span(data-bind="text: key")
         %span.bubble.markdown(data-bind="visible: _(features).include('markdown')") markdown
         %span.bubble.html(data-bind="visible: _(features).include('html')") html
-
-%style(type="text/css")
-  :sass
-    form
-      textarea
-        color: #000
-
-    .popover h3.title a.close
-      // same as .modal .modal-header .close
-      position: absolute
-      font-weight: normal
-      right: 14px
-      top: 14px
-      color: #999
-      line-height: 10px
-      font-size: 18px
-
-    .popout-translation
-      textarea
-        min-height: 200px
-        width: 100%
-
-    .translation-table
-      table-layout: fixed
-
-      td, th
-        &.locale
-          width: 38%
-        &.info
-          width: 24%
-        &.spinner
-          width: 0
-
-          img
-            display: block
-            margin-left: -20px
-
-      tr.deprecated
-        opacity: 0.5
-
-      td
-        vertical-align: top
-
-        textarea
-          font-size: 16px
-          min-height: 4em
-          width: 100%
-
-          &.processing
-            border-color: #f00
-            background-color: #ddd
-
-        &.spinner
-          a
-            opacity: 0.2
-            display: block
-            margin: 0.5em 0
-
-            &:hover
-              opacity: 1
-
-        &.info
-          line-height: 1.4em
-
-          .default
-            color: #333
-            margin-bottom: 0.2em
-            font-size: 110%
-
-            &.notGiven
-              color: #faa
-
-          .bubble
-            cursor: help
-            font-size: 80%
-            font-weight: bold
-            color: white
-            padding: 2px
-            border-radius: 3px
-
-            &.markdown
-              background-color: #68f
-              border: 1px solid darken(#68f, 15%)
-
-            &.html
-              background-color: #f33
-              border: 1px solid darken(#f33, 15%)
+      .lastSeen(data-bind="text: lastSeenString")
 
 #translation-app
   .topbar
@@ -254,13 +325,17 @@
               %thead
                 %tr
                   %th.spinner
-                  %th.locale English / English
-                  %th.locale Deutsch / German
+                  %th.locale
+                    %img(src="/images/babelabel/flags/en.png" width="16" height="11")
+                    English / English
+                  %th.locale
+                    %img(src="/images/babelabel/flags/de.png" width="16" height="11")
+                    %span Deutsch / German
                   %th.info
               %tbody.noTranslations(data-bind="visible: filteredTranslations().length == 0")
                 %tr
                   %td(colspan="3")
-                    Es liegen keine Übersetzungen in der Datenbank.
+                    Keine übereinstimmenden Übersetzungen gefunden.
               %tbody(data-bind="template: { name: 'translationRow', foreach: filteredTranslations }")
             .actions
               Updates werden automatisch gespeichert.
