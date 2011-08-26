@@ -30,10 +30,9 @@
       table-layout: fixed
 
       td, th
-        &.locale
-          width: 38%
-        &.info
-          width: 24%
+        &.locale, &.info
+          width: 50%
+
         &.spinner
           width: 0
 
@@ -263,15 +262,10 @@
     %td.locale
       .window
         .window-label
-          %img(src="/images/babelabel/flags/en.png" width="16" height="11")
-        %textarea(name="values[en]" data-bind="value: values.en, attr: { placeholder: $data.default() }")
-    %td.locale
-      .window
-        .window-label
-          %img(src="/images/babelabel/flags/de.png" width="16" height="11")
-        %textarea(name="values[de]" data-bind="value: values.de, attr: { placeholder: $data.default() }")
+          %img(src="/images/babelabel/flags/${targetLocale()}.png" width="16" height="11")
+        %textarea(name="values[${targetLocale()}]" data-bind="value: values[targetLocale()], attr: { placeholder: $data.default() }")
     %td.info
-      .default(data-bind="text: $data.default()")
+      .default(data-bind="text: values[sourceLocale()]")
       .key
         %span(data-bind="text: key")
         %span.bubble.markdown(data-bind="visible: _(features).include('markdown')") markdown
@@ -316,7 +310,13 @@
 
     %section#translations
       .page-header
-        %h2 Alle Übersetzungen
+        %h2
+          Alle Übersetzungen
+          %small
+            %select(data-bind="options: ['default', 'de', 'en'], value: sourceLocale")
+            nach
+            %select(data-bind="options: ['de', 'en'], value: targetLocale")
+
 
       .row
         .span16.columns
@@ -326,22 +326,22 @@
                 %tr
                   %th.spinner
                   %th.locale
-                    %img(src="/images/babelabel/flags/en.png" width="16" height="11")
-                    English / English
-                  %th.locale
-                    %img(src="/images/babelabel/flags/de.png" width="16" height="11")
-                    %span Deutsch / German
+                    %img(width="16" height="11" data-bind="attr: { src: ('/images/babelabel/flags/'+targetLocale()+'.png') }")
+                    %span(data-bind="text: targetLocale")
                   %th.info
+                    %span(data-bind="text: sourceLocale")
               %tbody.noTranslations(data-bind="visible: filteredTranslations().length == 0")
                 %tr
-                  %td(colspan="3")
-                    Keine übereinstimmenden Übersetzungen gefunden.
+                  %td(colspan="3") Keine übereinstimmenden Übersetzungen gefunden.
               %tbody(data-bind="template: { name: 'translationRow', foreach: filteredTranslations }")
             .actions
               Updates werden automatisch gespeichert.
 
 :coffeescript
   $ ->
+    sourceLocale = ko.observable("default")
+    targetLocale = ko.observable("en")
+
     updateTranslation = (t) ->
       $.ajax
         type: "POST"
@@ -365,6 +365,8 @@
     translations = _(TRANSLATIONS).map (item) ->
       m =
         key: item._id
+        targetLocale: targetLocale
+        sourceLocale: sourceLocale
         default: ko.observable(item.default || "")
         last_seen: ko.observable(item.last_seen || null)
         hidden: ko.observable(item.hidden or false)
@@ -375,6 +377,7 @@
         features: _(["html", "markdown"]).select (i) ->
           _(item._id).endsWith("_\#{i}")
         values:
+          default: item.default
           de: ko.observable(item.values.de || "")
           en: ko.observable(item.values.en || "")
 
@@ -416,6 +419,8 @@
       searchQuery: ko.observable("")
       hiddenAndUnhiddenTranslations: ko.observableArray(translations)
       activeTab: ko.observable("all")
+      targetLocale: targetLocale
+      sourceLocale: sourceLocale
       switchTab: (e) ->
         $this = $(e.currentTarget)
         viewModel.activeTab($this.attr('data-tab'))
