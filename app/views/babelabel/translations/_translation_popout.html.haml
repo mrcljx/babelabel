@@ -1,0 +1,49 @@
+%script#translation-popout-tmpl(type="text/html")
+  .modal-backdrop.popout-translation
+    .modal
+      .modal-header
+        %h3
+          Übersetze
+        %a.close(href="#" data-bind="click: cancel") x
+      .modal-body
+        %form(data-bind="submit: $.noop")
+          .info
+            .clearfix
+              %label Schlüssel
+              .input
+                %span(data-bind="text: key")
+            .clearfix
+              %label Standardwert
+              .input
+                %span(data-bind="text: defaultText")
+            .clearfix
+              %label Zuletzt angezeigt
+              .input
+                %span(data-bind="text: lastSeenString")
+
+          %hr
+
+          %ul.tabs
+            %li(data-bind="attr: {'class': ( activeTab() == 'en' ? 'active' : '' )}")
+              %a(href="#" data-bind="click: switchToTab('en')") Englisch
+            %li(data-bind="attr: {'class': ( activeTab() == 'de' ? 'active' : '' )}")
+              %a(href="#" data-bind="click: switchToTab('de')") Deutsch
+          .tab-panels
+            .tab-panel(data-bind="visible: activeTab() == 'de'")
+              %textarea(data-bind="value: values.de")
+            .tab-panel(data-bind="visible: activeTab() == 'en'")
+              %textarea(data-bind="value: values.en")
+
+          %hr
+            %label
+              Optionen
+            .input
+              %ul.inputs-list
+                %li
+                  %label
+                    %input(type="checkbox" data-bind="checked: hidden")
+                    %span Diese Übersetzung nicht mehr anzeigen.
+
+      .modal-footer
+        %button.btn.primary(data-bind="click: save") Speichern
+        %button.btn(data-bind="click: cancel") Verwerfen

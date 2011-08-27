@@ -1,0 +1,179 @@
+textarea {
+  -webkit-box-sizing: border-box;
+  -mox-box-sizing: border-box;
+  -o-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+form textarea {
+  color: #000;
+}
+
+.popover h3.title a.close {
+  position: absolute;
+  font-weight: normal;
+  right: 14px;
+  top: 14px;
+  color: #999;
+  line-height: 10px;
+  font-size: 18px;
+}
+
+.popout-translation textarea {
+  min-height: 200px;
+  width: 100%;
+}
+
+.translation-table {
+  table-layout: fixed;
+
+  td, th {
+    &.locale, &.info {
+      width: 50%;
+    }
+
+    &.spinner {
+      width: 0;
+    }
+  }
+
+  td.spinner {
+    .item {
+      display: block;
+      width: 120px;
+      margin: 0.5em 0 0.5em -140px;
+      line-height: 16px;
+      text-align: right;
+
+      &.alert {
+        color: #f00;
+      }
+
+      &.ok {
+        color: #147500;
+      }
+    }
+
+    .item img {
+      vertical-align: top;
+      opacity: 0.2;
+    }
+
+    a.item:hover {
+      text-decoration: none;
+    }
+  }
+
+  tr.deprecated {
+    opacity: 0.5;
+  }
+
+  td {
+    vertical-align: top;
+
+    textarea {
+      min-height: 85px;
+      width: 100%;
+
+      &.processing {
+        border-color: #f00;
+        background-color: #ddd;
+      }
+    }
+
+    &.info {
+      line-height: 1.4em;
+      position: relative;
+
+      .default {
+        color: #333;
+        margin-bottom: 0.2em;
+        font-size: 110%;
+
+        &.notGiven {
+          color: #faa;
+        }
+      }
+
+      .lastSeen, .key {
+        font-size: 85%;
+      }
+
+      .lastSeen {
+        color: #bbb;
+      }
+
+      .key {
+        color: #666;
+      }
+
+      .bubble {
+        cursor: help;
+        padding: 2px;
+        border-radius: 3px;
+
+        &.markdown {
+          background-color: #def;
+          border: 1px solid darken(#def, 5%);
+        }
+
+        &.html {
+          background-color: #fee;
+          border: 1px solid darken(#fee, 5%);
+        }
+      }
+
+      .translation-actions {
+        position: absolute;
+        right: 5px;
+        bottom: 5px;
+        line-height: 12px;
+        font-size: 11px;
+        a {
+          margin: 0 0 0 5px;
+          color: #000;
+          opacity: 0.6;
+
+          &:hover { opacity: 0.8; }
+        }
+        img { vertical-align: top; }
+      }
+    }
+  }
+}
+
+.window {
+  position: relative;
+
+  .window-label {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #eee;
+    padding: 2px;
+    line-height: 11px;
+    border: 1px solid #ccc;
+
+    -webkit-border-radius: 0 0 0 3px;
+    -moz-border-radius: 0 0 0 3px;
+    -o-border-radius: 0 0 0 3px;
+    border-radius: 0 0 0 3px;
+
+    background: #efefef;
+    background: -moz-linear-gradient(top, #efefef 0%, #efefef 24%, #dedede 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#efefef), color-stop(24%,#efefef), color-stop(100%,#dedede));
+    background: -webkit-linear-gradient(top, #efefef 0%,#efefef 24%,#dedede 100%);
+    background: -o-linear-gradient(top, #efefef 0%,#efefef 24%,#dedede 100%);
+    background: -ms-linear-gradient(top, #efefef 0%,#efefef 24%,#dedede 100%);
+    filter: ~"progid:DXImageTransform.Microsoft.gradient( startColorstr='#efefef', endColorstr='#dedede',GradientType=0 )";
+    background: linear-gradient(top, #efefef 0%,#efefef 24%,#dedede 100%);
+
+    img {
+      vertical-align: top;
+    }
+  }
+
+  &:hover .window-label {
+    display: none;
+  }
+}

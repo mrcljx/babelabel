@@ -1,0 +1,44 @@
+#confirmDeleteUnseen(style="display: none;")
+  .modal-backdrop
+    .modal
+      .modal-header
+        %h3 Bist du Dir sicher?
+        %a.close(href="#" data-action="cancel") x
+      .modal-body
+        %p
+          Du möchtest
+          %strong alle Übersetzungen löschen,
+          die
+          %em anscheinend
+          nicht mehr aktiv sind?
+      .modal-footer
+        %button.btn.danger(data-action="confirm") Ja, alle löschen!
+        %button.btn(data-action="cancel") Nein, doch nicht.
+
+%script#markdown-help(type="text/html")
+  :md
+    Mit Markdown können Texte einfach formatiert werden. Mehr zu [Markdown lesen](http://de.wikipedia.org/wiki/Markdown).
+
+    ---
+
+    `**fett**`, `*kursiv*`, `# Überschrift 1`, `## Überschrift 2`, `- Listenpunkt` (Bindestrich voranstellen). Eine Leerzeile erzeugt einen Absatz.
+
+    Links werden werden mit `[Text des Links](http://...)` definiert. Bilder lassen sich mit `![Bildname](http://...)` einbinden.
+
+%script#html-help(type="text/html")
+  :md
+    Mit HTML stehen sämtliche HTML-Tags zur Verfügung, unter anderem `<a>`, `<b>`, `<p>`, `<ul>`, `<li>` oder `<br/>`.
+
+    Es sollte darauf geachtet werden, dass alle Tags geschlossen werden, also `<i>kursiv</i>`.
+
+    Eine [Liste der Tags](https://developer.mozilla.org/en/HTML/Element) (Englisch) findet man beim *Mozilla Developer Network*.
+
+
+%script#popover(type="text/html")
+  .popover.below
+    .arrow
+    .inner
+      %h3.title
+        ${title}
+        %a.close(href="#" data-action="cancel") x
+      .content {{html content}}

@@ -1,306 +1,12 @@
-%style(type="text/css")
-  :sass
-    textarea
-      -webkit-box-sizing: border-box
-      -mox-box-sizing: border-box
-      -o-box-sizing: border-box
-      box-sizing: border-box
-
-    form
-      textarea
-        color: #000
-        // font-family: Consolas, Menlo, Monaco, Lucida Console, Liberation Mono, DejaVu Sans Mono, Bitstream Vera Sans Mono, Courier New, monospace, serif
-
-    .popover h3.title a.close
-      // same as .modal .modal-header .close
-      position: absolute
-      font-weight: normal
-      right: 14px
-      top: 14px
-      color: #999
-      line-height: 10px
-      font-size: 18px
-
-    .popout-translation
-      textarea
-        min-height: 200px
-        width: 100%
-
-    .translation-table
-      table-layout: fixed
-
-      td, th
-        &.locale, &.info
-          width: 50%
-
-        &.spinner
-          width: 0
-
-          .item
-            display: block
-            width: 120px
-            margin: 0.5em 0 0.5em -140px
-            line-height: 16px
-            text-align: right
-
-            img
-              vertical-align: top
-              opacity: 0.2
-
-            &.alert
-              color: #f00
-
-            &.ok
-              color: #147500
-
-
-          a.item:hover
-            text-decoration: none
-
-            img
-              opacity: 0.4
-
-
-      tr.deprecated
-        opacity: 0.5
-
-      td
-        vertical-align: top
-
-        .window
-          position: relative
-
-          .window-label
-            position: absolute
-            top: 0
-            right: 0
-            background-color: #eee
-            padding: 2px
-            line-height: 11px
-            border: 1px solid #ccc
-
-            -webkit-border-radius: 0 0 0 3px
-            -moz-border-radius: 0 0 0 3px
-            -o-border-radius: 0 0 0 3px
-            border-radius: 0 0 0 3px
-
-            background: #efefef
-            background: -moz-linear-gradient(top, #efefef 0%, #efefef 24%, #dedede 100%)
-            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#efefef), color-stop(24%,#efefef), color-stop(100%,#dedede))
-            background: -webkit-linear-gradient(top, #efefef 0%,#efefef 24%,#dedede 100%)
-            background: -o-linear-gradient(top, #efefef 0%,#efefef 24%,#dedede 100%)
-            background: -ms-linear-gradient(top, #efefef 0%,#efefef 24%,#dedede 100%)
-            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#efefef', endColorstr='#dedede',GradientType=0 )
-            background: linear-gradient(top, #efefef 0%,#efefef 24%,#dedede 100%)
-
-            img
-              vertical-align: top
-
-          &:hover .window-label
-            display: none
-
-        textarea
-          min-height: 85px
-          width: 100%
-
-          &.processing
-            border-color: #f00
-            background-color: #ddd
-
-        &.info
-          line-height: 1.4em
-
-          .default
-            color: #333
-            margin-bottom: 0.2em
-            font-size: 110%
-
-            &.notGiven
-              color: #faa
-
-          .lastSeen, .key
-            font-size: 85%
-
-          .lastSeen
-            color: #bbb
-
-          .key
-            color: #666
-
-          .bubble
-            cursor: help
-            padding: 2px
-            border-radius: 3px
-
-            &.markdown
-              background-color: #def
-              border: 1px solid darken(#def, 5%)
-
-            &.html
-              background-color: #fee
-              border: 1px solid darken(#fee, 5%)
-
 :javascript
   var TRANSLATIONS = #{@translations.to_json};
 
-#confirmDeleteUnseen(style="display: none;")
-  .modal-backdrop
-    .modal
-      .modal-header
-        %h3 Bist du Dir sicher?
-        %a.close(href="#" data-action="cancel") x
-      .modal-body
-        %p
-          Du möchtest
-          %strong alle Übersetzungen löschen,
-          die
-          %em anscheinend
-          nicht mehr aktiv sind?
-      .modal-footer
-        %button.btn.danger(data-action="confirm") Ja, alle löschen!
-        %button.btn(data-action="cancel") Nein, doch nicht.
-
-%script#markdown-help(type="text/html")
-  :md
-    Mit Markdown können Texte einfach formatiert werden. Mehr zu [Markdown lesen](http://de.wikipedia.org/wiki/Markdown).
-
-    ---
-
-    `**fett**`, `*kursiv*`, `# Überschrift 1`, `## Überschrift 2`, `- Listenpunkt` (Bindestrich voranstellen). Eine Leerzeile erzeugt einen Absatz.
-
-    Links werden werden mit `[Text des Links](http://...)` definiert. Bilder lassen sich mit `![Bildname](http://...)` einbinden.
-
-%script#html-help(type="text/html")
-  :md
-    Mit HTML stehen sämtliche HTML-Tags zur Verfügung, unter anderem `<a>`, `<b>`, `<p>`, `<ul>`, `<li>` oder `<br/>`.
-
-    Es sollte darauf geachtet werden, dass alle Tags geschlossen werden, also `<i>kursiv</i>`.
-
-    Eine [Liste der Tags](https://developer.mozilla.org/en/HTML/Element) (Englisch) findet man beim *Mozilla Developer Network*.
-
-
-%script#popover(type="text/html")
-  .popover.below
-    .arrow
-    .inner
-      %h3.title
-        ${title}
-        %a.close(href="#" data-action="cancel") x
-      .content {{html content}}
-
-%script#popoutTranslation(type="text/html")
-  .modal-backdrop.popout-translation
-    .modal
-      .modal-header
-        %h3
-          Übersetze
-        %a.close(href="#" data-bind="click: cancel") x
-      .modal-body
-        %form(data-bind="submit: $.noop")
-          .info
-            .clearfix
-              %label Schlüssel
-              .input
-                %span(data-bind="text: key")
-            .clearfix
-              %label Standardwert
-              .input
-                %span(data-bind="text: defaultText")
-            .clearfix
-              %label Zuletzt angezeigt
-              .input
-                %span(data-bind="text: lastSeenString")
-
-          %hr
-
-          %ul.tabs
-            %li(data-bind="attr: {'class': ( activeTab() == 'en' ? 'active' : '' )}")
-              %a(href="#" data-bind="click: switchToTab('en')") Englisch
-            %li(data-bind="attr: {'class': ( activeTab() == 'de' ? 'active' : '' )}")
-              %a(href="#" data-bind="click: switchToTab('de')") Deutsch
-          .tab-panels
-            .tab-panel(data-bind="visible: activeTab() == 'de'")
-              %textarea(data-bind="value: values.de")
-            .tab-panel(data-bind="visible: activeTab() == 'en'")
-              %textarea(data-bind="value: values.en")
-
-          %hr
-            %label
-              Optionen
-            .input
-              %ul.inputs-list
-                %li
-                  %label
-                    %input(type="checkbox" data-bind="checked: hidden")
-                    %span Diese Übersetzung nicht mehr anzeigen.
-
-      .modal-footer
-        %button.btn.primary(data-bind="click: save") Speichern
-        %button.btn(data-bind="click: cancel") Verwerfen
-
-%script#translationRow(type="text/html")
-  %tr.translation(data-bind="attr: { 'data-id': key, 'class': ( !!last_seen() ? '' : 'deprecated' ) }")
-    %td.spinner
-      %a.item(href="#" data-bind="click: popout" tabindex="-1")
-        Fenster öffnen
-        %img(src="/images/babelabel/translation-popout.png" width="16" height="16")
-      %a.item(href="#" data-bind="click: unhide, visible: hidden" tabindex="-1")
-        Anzeigen
-        %img(src="/images/babelabel/translation-unhide.png" width="16" height="16")
-      %a.item(href="#" data-bind="click: hide, visible: !hidden()" tabindex="-1")
-        Verstecken
-        %img(src="/images/babelabel/translation-hide.png" width="16" height="16")
-      .item.ok(data-bind="visible: taskStatus() == 'ok'")
-        Gespeichert
-        %img(src="/images/babelabel/validation-ok.png" width="16" height="16")
-      .item.alert(data-bind="visible: taskStatus() == 'alert'")
-        Fehler
-        %img(src="/images/babelabel/validation-alert.png" width="16" height="16")
-      .item(data-bind="visible: taskStatus() == 'active'")
-        Speichern&hellip;
-        %img(src="/images/babelabel/spinner.gif" width="16" height="16")
-    %td.locale
-      .window
-        .window-label
-          %img(src="/images/babelabel/flags/${targetLocale()}.png" width="16" height="11")
-        %textarea(name="values[${targetLocale()}]" data-bind="value: values[targetLocale()], attr: { placeholder: $data.default() }")
-    %td.info
-      .default(data-bind="text: values[sourceLocale()]")
-      .key
-        %span(data-bind="text: key")
-        %span.bubble.markdown(data-bind="visible: _(features).include('markdown')") markdown
-        %span.bubble.html(data-bind="visible: _(features).include('html')") html
-      .lastSeen(data-bind="text: lastSeenString")
+= render :partial => "dialogs"
+= render :partial => "translation_row"
+= render :partial => "translation_popout"
 
 #translation-app
-  .topbar
-    .fill
-      .container
-        %h3
-          %a(href="/translations") Babelabel
-        %ul
-          %li(data-bind="attr: {'class': ( activeTab() == 'all' ? 'active' : '' )}")
-            %a(href="#" data-bind="click: switchTab" data-tab="all")
-              Alle (<span data-bind="text: allTranslations().length"></span>)
-          %li(data-bind="attr: {'class': ( activeTab() == 'incomplete' ? 'active' : '' )}")
-            %a(href="#" data-bind="click: switchTab" data-tab="incomplete")
-              Unvollständige (<span data-bind="text: incompleteTranslations().length"></span>)
-          %li(data-bind="attr: {'class': ( activeTab() == 'unseen' ? 'active' : '' )}")
-            %a(href="#" data-bind="click: switchTab" data-tab="unseen")
-              Nicht gesehen (<span data-bind="text: unseenTranslations().length"></span>)
-          %li(data-bind="attr: {'class': ( activeTab() == 'hidden' ? 'active' : '' )}")
-            %a(href="#" data-bind="click: switchTab" data-tab="hidden")
-              Versteckt (<span data-bind="text: hiddenTranslations().length"></span>)
-        %form(data-bind="submit: $.noop")
-          %input(type="text" placeholder="Suchen" data-bind="value: searchQuery, valueUpdate: 'keyup'")
-        %ul.nav.secondary-nav
-          %li.menu
-            %a.menu(href="#") Aktionen
-            %ul.menu-dropdown
-              %li
-                %a#resetLastSeen(href="#") Reset LastSeen
-              %li
-                %a#deleteUnseen(href="#") Delete Unseen
+  = render :partial => "topbar"
 
   .container
     %br
@@ -326,14 +32,14 @@
                 %tr
                   %th.spinner
                   %th.locale
-                    %img(width="16" height="11" data-bind="attr: { src: ('/images/babelabel/flags/'+targetLocale()+'.png') }")
+                    %img(width="16" height="11" data-bind="attr: { src: targetLocaleFlag }")
                     %span(data-bind="text: targetLocale")
                   %th.info
                     %span(data-bind="text: sourceLocale")
               %tbody.noTranslations(data-bind="visible: filteredTranslations().length == 0")
                 %tr
                   %td(colspan="3") Keine übereinstimmenden Übersetzungen gefunden.
-              %tbody(data-bind="template: { name: 'translationRow', foreach: filteredTranslations }")
+              %tbody(data-bind="template: { name: 'translation-row-tmpl', foreach: filteredTranslations, templateOptions: { app: sc } }")
             .actions
               Updates werden automatisch gespeichert.
 
@@ -341,11 +47,13 @@
   $ ->
     sourceLocale = ko.observable("default")
     targetLocale = ko.observable("en")
+    targetLocaleFlag = ko.dependentObservable ->
+      "/images/babelabel/flags/\#{targetLocale()}.png"
 
     updateTranslation = (t) ->
       $.ajax
         type: "POST"
-        url: "/translations/\#{t.key}"
+        url: "/babelabel/translations/\#{t.key}"
         data:
           _method: "PUT"
           "values[de]": t.values.de() || ""
@@ -377,9 +85,15 @@
         features: _(["html", "markdown"]).select (i) ->
           _(item._id).endsWith("_\#{i}")
         values:
-          default: item.default
+          default: ko.observable(item.default)
           de: ko.observable(item.values.de || "")
           en: ko.observable(item.values.en || "")
+
+      m.sourceValue = ko.dependentObservable ->
+        m.values[sourceLocale()]?()
+      m.targetValue = ko.dependentObservable
+        read: -> m.values[targetLocale()]?()
+        write: (v) -> m.values[targetLocale()]?(v)
 
       m.lastSeenString = ko.dependentObservable ->
         xmlDate = m.last_seen()
@@ -393,7 +107,7 @@
       m.values.en.subscribe -> updateTranslation(m)
 
       m.popout = ->
-        tmpl = $("#popoutTranslation").tmpl().prependTo("body")
+        tmpl = $("#translation-popout-tmpl").tmpl().prependTo("body")
         poViewModel =
           key: item._id
           defaultText: m.default()
@@ -420,6 +134,7 @@
       hiddenAndUnhiddenTranslations: ko.observableArray(translations)
       activeTab: ko.observable("all")
       targetLocale: targetLocale
+      targetLocaleFlag: targetLocaleFlag
       sourceLocale: sourceLocale
       switchTab: (e) ->
         $this = $(e.currentTarget)
@@ -439,6 +154,8 @@
         !item.last_seen()
 
     viewModel.filteredTranslations = ko.dependentObservable ->
+      q = (viewModel.searchQuery() || "").toLowerCase()
+
       source = switch viewModel.activeTab()
         when "all" then viewModel.allTranslations()
         when "unseen" then viewModel.unseenTranslations()
@@ -446,12 +163,10 @@
         when "hidden" then viewModel.hiddenTranslations()
         else []
 
-      _(source).select (item) ->
-        q = (viewModel.searchQuery() || "").toLowerCase()
-
-        if _.isBlank(q)
-          true
-        else
+      if _.isBlank(q)
+        source
+      else
+        _(source).select (item) ->
           _([item.key, item.values.de(), item.values.en()]).detect (s) ->
             _((s || "").toLowerCase()).includes(q)
 
@@ -491,7 +206,7 @@
       popover.offset(o).fadeIn(150)
 
   $ ->
-    $(".bubble").bind "click", (e) ->
+    $(".bubble").live "click", (e) ->
       $this = $(this)
 
       if $this.is(".markdown")
@@ -527,12 +242,12 @@
     $("#resetLastSeen").click (e) ->
       e.preventDefault()
       $.ajax
-        url: "/translations/reset_last_seen"
+        url: "/babelabel/translations/reset_last_seen"
         type: "POST"
 
     $("#deleteUnseen").click (e) ->
       e.preventDefault()
       customConfirm ->
         $.ajax
-          url: "/translations/delete_unseen"
+          url: "/babelabel/translations/delete_unseen"
           type: "POST"

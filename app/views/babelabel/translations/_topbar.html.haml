@@ -1,0 +1,28 @@
+.topbar
+  .fill
+    .container
+      %h3
+        %a(href="/babelabel/translations") Babelabel
+      %ul
+        %li(data-bind="attr: {'class': ( activeTab() == 'all' ? 'active' : '' )}")
+          %a(href="#" data-bind="click: switchTab" data-tab="all")
+            Alle (<span data-bind="text: allTranslations().length"></span>)
+        %li(data-bind="attr: {'class': ( activeTab() == 'incomplete' ? 'active' : '' )}")
+          %a(href="#" data-bind="click: switchTab" data-tab="incomplete")
+            Unvollständige (<span data-bind="text: incompleteTranslations().length"></span>)
+        %li(data-bind="attr: {'class': ( activeTab() == 'unseen' ? 'active' : '' )}")
+          %a(href="#" data-bind="click: switchTab" data-tab="unseen")
+            Nicht gesehen (<span data-bind="text: unseenTranslations().length"></span>)
+        %li(data-bind="attr: {'class': ( activeTab() == 'hidden' ? 'active' : '' )}")
+          %a(href="#" data-bind="click: switchTab" data-tab="hidden")
+            Versteckt (<span data-bind="text: hiddenTranslations().length"></span>)
+      %form(data-bind="submit: $.noop")
+        %input(type="text" placeholder="Suchen" data-bind="value: searchQuery, valueUpdate: 'keyup'")
+      %ul.nav.secondary-nav
+        %li.menu
+          %a.menu(href="#") Aktionen
+          %ul.menu-dropdown
+            %li
+              %a#resetLastSeen(href="#") Reset LastSeen
+            %li
+              %a#deleteUnseen(href="#") Delete Unseen

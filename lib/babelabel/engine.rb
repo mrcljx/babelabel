@@ -7,6 +7,18 @@ module Babelabel
       app.middleware.insert_before ::Rack::Lock, ::ActionDispatch::Static, "#{root}/public"
     end
 
+    initializer "babelabel.advanced_assets" do |app|
+      require 'less'
+
+      handler = lambda do |tmpl|
+        result = Less::Parser.new.parse(tmpl.source).to_css
+        "@output_buffer = ''\n" +
+          "@output_buffer << #{result.inspect}\n"
+      end
+
+      ActionView::Template.register_template_handler :less, handler
+    end
+
     initializer "babelabel.replace_i18n_backend", :after => :build_middleware_stack do |app|
       if defined?(MongoMapper)
         collection = MongoMapper.database.collection('i18n')

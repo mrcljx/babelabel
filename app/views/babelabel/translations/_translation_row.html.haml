@@ -1,0 +1,34 @@
+%script#translation-row-tmpl(type="text/html")
+  %tr.translation(data-bind="attr: { 'data-id': key, 'class': ( !!last_seen() ? '' : 'deprecated' ) }")
+    %td.spinner
+      .item.ok(data-bind="visible: taskStatus() == 'ok'")
+        Gespeichert
+        %img(src="/images/babelabel/validation-ok.png" width="16" height="16")
+      .item.alert(data-bind="visible: taskStatus() == 'alert'")
+        Fehler
+        %img(src="/images/babelabel/validation-alert.png" width="16" height="16")
+      .item(data-bind="visible: taskStatus() == 'active'")
+        Speichern&hellip;
+        %img(src="/images/babelabel/spinner.gif" width="16" height="16")
+    %td.locale
+      .window
+        .window-label
+          %img(width="16" height="11" data-bind="attr: { src: $item.app.targetLocaleFlag() }")
+        %textarea(data-bind="value: targetValue, attr: { placeholder: $data.default() }")
+    %td.info
+      .default(data-bind="text: sourceValue")
+      .key
+        %span(data-bind="text: key")
+        %span.bubble.markdown(data-bind="visible: _(features).include('markdown')") markdown
+        %span.bubble.html(data-bind="visible: _(features).include('html')") html
+      .lastSeen(data-bind="text: lastSeenString")
+      .translation-actions
+        %a.item(href="#" data-bind="click: unhide, visible: hidden" tabindex="-1")<
+          Anzeigen
+          %img(src="/images/babelabel/translation-unhide.png" width="12" height="12")
+        %a.item(href="#" data-bind="click: hide, visible: !hidden()" tabindex="-1")<
+          Verstecken
+          %img(src="/images/babelabel/translation-hide.png" width="12" height="12")
+        %a.item(href="#" data-bind="click: popout" tabindex="-1")<
+          Fenster öffnen
+          %img(src="/images/babelabel/translation-popout.png" width="12" height="12")
