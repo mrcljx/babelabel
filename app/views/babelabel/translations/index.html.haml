@@ -9,39 +9,36 @@
   = render :partial => "topbar"
 
   .container
-    %br
-    %br
-    %br
-    %br
+    .page-content
 
-    %section#translations
-      .page-header
-        %h2
-          Alle Übersetzungen
-          %small
+      %section#translations
+        .page-header
+          .query-modifier
+            Von
             %select(data-bind="options: ['default', 'de', 'en'], value: sourceLocale")
             nach
             %select(data-bind="options: ['de', 'en'], value: targetLocale")
+          %h2
+            Übersetzungen
 
 
-      .row
-        .span16.columns
-          %form(data-bind="submit: $.noop")
-            %table.translation-table.common-table.zebra-striped
-              %thead
-                %tr
-                  %th.spinner
-                  %th.locale
-                    %img(width="16" height="11" data-bind="attr: { src: targetLocaleFlag }")
-                    %span(data-bind="text: targetLocale")
-                  %th.info
-                    %span(data-bind="text: sourceLocale")
-              %tbody.noTranslations(data-bind="visible: filteredTranslations().length == 0")
-                %tr
-                  %td(colspan="3") Keine übereinstimmenden Übersetzungen gefunden.
-              %tbody(data-bind="template: { name: 'translation-row-tmpl', foreach: filteredTranslations, templateOptions: { app: sc } }")
-            .actions
-              Updates werden automatisch gespeichert.
+        .row
+          .span16.columns
+            %form(data-bind="submit: $.noop")
+              %table.translation-table.common-table.zebra-striped
+                %thead
+                  %tr
+                    %th.spinner
+                    %th.locale
+                      %img(width="16" height="11" data-bind="attr: { src: targetLocaleFlag }")
+                      %span(data-bind="text: targetLocale")
+                    %th.info
+                      %span(data-bind="text: sourceLocale")
+                %tbody.noTranslations(data-bind="visible: filteredTranslations().length == 0")
+                  %tr
+                    %td(colspan="3") Keine übereinstimmenden Übersetzungen gefunden.
+                %tbody(data-bind="template: { name: 'translation-row-tmpl', foreach: filteredTranslations, templateOptions: { app: sc } }")
+
 
 :coffeescript
   $ ->

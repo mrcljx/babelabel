@@ -1,3 +1,12 @@
+html {
+  height: 100%;
+}
+
+body {
+  background-color: #ddd;
+  min-height: 100%;
+}
+
 textarea {
   -webkit-box-sizing: border-box;
   -mox-box-sizing: border-box;
@@ -24,6 +33,19 @@ form textarea {
   width: 100%;
 }
 
+#translations .query-modifier {
+  float: right;
+  line-height: 36px;
+}
+
+#translation-app {
+  .page-content {
+    background-color: #fff;
+    padding: 5em 20px 0 20px;
+    margin: 0 -20px;
+  }
+}
+
 .translation-table {
   table-layout: fixed;
 
@@ -38,10 +60,15 @@ form textarea {
   }
 
   td.spinner {
+    position: relative;
+
     .item {
-      display: block;
-      width: 120px;
-      margin: 0.5em 0 0.5em -140px;
+      display: inline-block;
+      white-space: nowrap;
+      position: absolute;
+      right: 0;
+      padding: 0.35em 0.4em;
+      background-color: #fff;
       line-height: 16px;
       text-align: right;
 
@@ -52,15 +79,10 @@ form textarea {
       &.ok {
         color: #147500;
       }
-    }
 
-    .item img {
-      vertical-align: top;
-      opacity: 0.2;
-    }
-
-    a.item:hover {
-      text-decoration: none;
+      img {
+        vertical-align: top;
+      }
     }
   }
 

@@ -3,26 +3,10 @@
     .modal
       .modal-header
         %h3
-          Übersetze
+          %span(data-bind="text: key")
         %a.close(href="#" data-bind="click: cancel") x
       .modal-body
         %form(data-bind="submit: $.noop")
-          .info
-            .clearfix
-              %label Schlüssel
-              .input
-                %span(data-bind="text: key")
-            .clearfix
-              %label Standardwert
-              .input
-                %span(data-bind="text: defaultText")
-            .clearfix
-              %label Zuletzt angezeigt
-              .input
-                %span(data-bind="text: lastSeenString")
-
-          %hr
-
           %ul.tabs
             %li(data-bind="attr: {'class': ( activeTab() == 'en' ? 'active' : '' )}")
               %a(href="#" data-bind="click: switchToTab('en')") Englisch
@@ -35,6 +19,16 @@
               %textarea(data-bind="value: values.en")
 
           %hr
+
+          .clearfix
+            %label Standardwert
+            .input
+              %span(data-bind="text: defaultText")
+          .clearfix
+            %label Zuletzt angezeigt
+            .input
+              %span(data-bind="text: lastSeenString")
+          .clearfix
             %label
               Optionen
             .input
