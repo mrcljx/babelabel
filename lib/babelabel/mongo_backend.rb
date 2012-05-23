@@ -42,7 +42,9 @@ class Babelabel::MongoBackend
   def lookup(locale, key, scope = [], options = {})
     key   = normalize_flat_keys(locale, key, scope, options[:separator])
     value = get(locale, key)
-    raise I18n::MissingTranslationData.new(locale, key, options) if value.nil?
-    value
+
+    value.tap do
+      raise options[:raise].new(locale, key, options) if value.nil? and options[:raise]
+    end
   end
 end

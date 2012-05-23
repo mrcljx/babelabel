@@ -1,4 +1,4 @@
-Rails.application.routes.draw do |map|
+Rails.application.routes.draw do
   namespace :babelabel do
     resources :translations, :controller => 'translations', :constraints => { :id => /[^\/]+/ } do
       collection do

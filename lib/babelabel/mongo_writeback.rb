@@ -36,8 +36,8 @@ class Babelabel::MongoWriteback
 
     if options.include?(:default)
       options[:default]
-    else
-      raise I18n::MissingTranslationData.new(locale, key, options)
+    elsif options[:raise]
+      raise options[:raise].new(locale, key, options)
     end
   end
 end

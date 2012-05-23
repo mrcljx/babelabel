@@ -1,6 +1,7 @@
 source "http://rubygems.org"
 
 gem 'less', ">= 2.0.6"
+gem 'therubyracer'
 
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.

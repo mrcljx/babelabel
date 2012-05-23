@@ -23,7 +23,7 @@ module Babelabel
       if defined?(MongoMapper)
         collection = MongoMapper.database.collection('i18n')
       else
-        puts "Couldn't find a connection."
+        raise "Couldn't find a MongoMapper connection."
         # collection = Mongo::Connection.new['babelabel-test'].collection('i18n')
       end
 
