@@ -9,12 +9,21 @@ class Babelabel::MongoWriteback
 
   def store_default_translations(locale, key, options = {})
     count, scope, default, separator = options.values_at(:count, :scope, :default, :separator)
-    separator ||= I18n.default_separator
-    key = normalize_flat_keys(locale, key, scope, separator)
+    default = default.last if default.is_a?(Array)
+    key = normalize_flat_keys(locale, key, scope, options[:separator])
+    keys = [key]
+
+    if count
+      keys = %w(zero one other).map do |k|
+        [key, k].join(".")
+      end
+    end
 
     interpolations = options.keys - I18n::RESERVED_KEYS
-    keys = count ? I18n.t('i18n.plural.keys', :locale => locale).map { |k| [key, k].join(".") } : [key]
-    keys.each { |key| store_default_translation(locale, key, default, interpolations) }
+
+    keys.each do |key|
+      store_default_translation locale, key, default, interpolations
+    end
   end
 
   def store_default_translation(locale, key, default, interpolations)
@@ -31,13 +40,8 @@ class Babelabel::MongoWriteback
   protected
 
   def lookup(locale, key, scope = [], options = {})
-    key = normalize_flat_keys(locale, key, scope, options[:separator])
-    self.store_default_translations(locale, key, options)
-
-    if options.include?(:default)
-      options[:default]
-    elsif options[:raise]
-      raise options[:raise].new(locale, key, options)
-    end
+    keys = normalize_flat_keys locale, key, scope, options[:separator]
+    store_default_translations locale, key, options
+    nil
   end
 end

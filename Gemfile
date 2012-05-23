@@ -2,6 +2,8 @@ source "http://rubygems.org"
 
 gem 'less', ">= 2.0.6"
 gem 'therubyracer'
+gem 'rdiscount'
+gem 'haml'
 
 # Add dependencies to develop your gem here.
 # Include everything needed to run rake, tests, features, etc.
